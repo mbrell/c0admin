@@ -2,6 +2,8 @@
 
 Suggests GNU/Linux terminal commands from natural language using AI.
 
+![c0admin Banner](c0admin-banner.png)
+
 ## Installation
 
 1. Clone the repository:
