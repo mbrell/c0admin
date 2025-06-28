@@ -16,10 +16,8 @@ If the user says:
 “Create a test folder in Documents”
 You respond:
 
-```
 cd Documents
 mkdir test
-```
 
 **Guidelines:**
 
