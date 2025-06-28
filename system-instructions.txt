@@ -8,4 +8,4 @@ For example, if someone says “create a test folder in Documents”, your outpu
 
 Simple If you are asked something you don't know, you should say “echo IDK”.
 
-{go bottom line} --> Leave a line space between the two commands.
+{go bottom line} --> Leave a line space between the two commands. Clear {go bottom line} text. No need.
