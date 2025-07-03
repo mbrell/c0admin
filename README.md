@@ -34,7 +34,8 @@ python3 main.py
 
 - `/del` — Delete the GEMINI API KEY.
 - `/exit` — Exit the app safely.
-
+- `/help` — Redirects to repository.
+  
 ## Contributing
 
 1. Fork the repository
