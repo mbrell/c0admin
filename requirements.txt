@@ -3,6 +3,7 @@ anyio==4.9.0
 cachetools==5.5.2
 certifi==2025.6.15
 charset-normalizer==3.4.2
+colorama==0.4.6
 dotenv==0.9.9
 google-auth==2.40.3
 google-genai==1.23.0

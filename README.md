@@ -4,6 +4,9 @@ Suggests GNU/Linux terminal commands from natural language using AI.
 
 ![c0admin Banner](c0admin-banner.png)
 
+> [!IMPORTANT]
+> INSTALL.sh will work soon...
+
 [How to get personal Google Gemini API key?](https://github.com/mbrell/c0admin/blob/main/how-to-get-gemini-api-key.md)
 
 ## Installation
@@ -37,7 +40,8 @@ python3 main.py
 - `/del` — Delete the GEMINI API KEY.
 - `/exit` — Exit the app safely.
 - `/help` — Redirects to repository.
-  
+- `/history` — Displays the command history (history.txt).
+
 ## Contributing
 
 1. Fork the repository

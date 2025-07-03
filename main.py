@@ -9,6 +9,7 @@ import time
 import requests
 import webbrowser
 import pyperclip
+from colorama import init, Fore, Style
 
 def ensure_api_key():
     api_key = os.environ.get("GEMINI_API_KEY")
@@ -44,11 +45,15 @@ def spinner(stop_event):
     sys.stdout.write('\r' + ' ' * 20 + '\r')
 
 def print_ascii():
-    print(r"""
+    print(Fore.CYAN + r"""
   ▄▖   ▌   ▘  
 ▛▘▛▌▀▌▛▌▛▛▌▌▛▌
 ▙▖█▌█▌▙▌▌▌▌▌▌▌                              
-    """)
+    """ + Style.RESET_ALL)
+
+def log_history(answer):
+    with open("history.txt", "a", encoding="utf-8") as f:
+        f.write(f"{answer}\n")
 
 def generate():
     print_ascii()
@@ -67,6 +72,12 @@ def generate():
         elif question.strip() == "/exit":
             print("Exiting...")
             return
+        elif question.strip() == "/history":
+            if not os.path.exists("history.txt"):
+                print("No history found.")
+                continue
+            os.system("cat history.txt")
+            continue
         elif question.strip() == "/help":
             webbrowser.open("https://github.com/mbrell/c0admin")
             print("Opening help documentation..")  
@@ -118,6 +129,7 @@ def generate():
             else:
                 print("An error occurred:", str(e))
         finally:
+            log_history(answer_text)
             stop_event.set()
             t.join()
 
