@@ -4,6 +4,8 @@ Suggests GNU/Linux terminal commands from natural language using AI.
 
 ![c0admin Banner](c0admin-banner.png)
 
+[How to get personal Google Gemini API key?](https://github.com/mbrell/c0admin/blob/main/how-to-get-gemini-api-key.md)
+
 ## Installation
 
 1. Clone the repository:
