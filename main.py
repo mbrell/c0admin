@@ -7,6 +7,8 @@ import itertools
 import sys
 import time
 import requests
+import webbrowser
+import pyperclip
 
 def ensure_api_key():
     api_key = os.environ.get("GEMINI_API_KEY")
@@ -65,10 +67,14 @@ def generate():
         elif question.strip() == "/exit":
             print("Exiting...")
             return
+        elif question.strip() == "/help":
+            webbrowser.open("https://github.com/mbrell/c0admin")
+            print("Opening help documentation..")  
+            continue
 
-        SYSTEM_INSTRUCTION_URL = "https://raw.githubusercontent.com/mbrell/c0admin/refs/heads/main/system-instructions.txt"
+        SYSTEM_INSTRUCTION_URL_MBRELL = "https://raw.githubusercontent.com/mbrell/c0admin/refs/heads/main/system-instructions.txt"
         try:
-            resp = requests.get(SYSTEM_INSTRUCTION_URL, timeout=5)
+            resp = requests.get(SYSTEM_INSTRUCTION_URL_MBRELL, timeout=5)
             resp.raise_for_status()
             system_instruction_text = resp.text
         except Exception as e:
@@ -94,6 +100,7 @@ def generate():
         t = threading.Thread(target=spinner, args=(stop_event,))
         t.start()
 
+        answer_text = ""
         try:
             for chunk in client.models.generate_content_stream(
                 model=model,
@@ -103,6 +110,8 @@ def generate():
                 stop_event.set()
                 t.join()
                 print(chunk.text, end="")
+                answer_text += chunk.text
+                pyperclip.copy(answer_text)
         except Exception as e:
             if "API key not valid" in str(e):
                 print("\nAPI key not valid. Please check your GEMINI_API_KEY or type /del to reset.")
