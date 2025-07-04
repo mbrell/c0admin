@@ -10,6 +10,12 @@ import requests
 import webbrowser
 import pyperclip
 from colorama import init, Fore, Style
+import time
+
+init()
+
+CUSTOM_INSTRUCTION_PATH = "custom_instruction.txt"
+DEFAULT_INSTRUCTION_URL = "https://raw.githubusercontent.com/mbrell/c0admin/refs/heads/main/system-instructions/default.txt"
 
 def ensure_api_key():
     api_key = os.environ.get("GEMINI_API_KEY")
@@ -51,9 +57,25 @@ def print_ascii():
 ▙▖█▌█▌▙▌▌▌▌▌▌▌                              
     """ + Style.RESET_ALL)
 
+current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) 
+
 def log_history(answer):
     with open("history.txt", "a", encoding="utf-8") as f:
-        f.write(f"{answer}\n")
+        f.write(f"{current_time}: {answer}\n")
+
+def fetch_instruction_text(url):
+    try:
+        resp = requests.get(url, timeout=5)
+        resp.raise_for_status()
+        return resp.text
+    except Exception as e:
+        print(f"sWarning: Failed to fetch system instruction from {url}. Using default..")
+        try:
+            resp = requests.get(DEFAULT_INSTRUCTION_URL, timeout=5)
+            resp.raise_for_status()
+            return resp.text
+        except Exception as fallback_error:
+            raise ValueError(f"Failed to fetch default instruction: {fallback_error} [ERROR_CODE:43]")
 
 def generate():
     print_ascii()
@@ -69,12 +91,15 @@ def generate():
         if question.strip() == "/del":
             delete_api_key()
             return
+        elif question.strip() == "/":
+            print("Type your question or command.")
+            continue
         elif question.strip() == "/exit":
             print("Exiting...")
             return
         elif question.strip() == "/history":
             if not os.path.exists("history.txt"):
-                print("No history found.")
+                print("History not found.")
                 continue
             os.system("cat history.txt")
             continue
@@ -82,14 +107,27 @@ def generate():
             webbrowser.open("https://github.com/mbrell/c0admin")
             print("Opening help documentation..")  
             continue
+        elif question.strip().startswith("/setinst "):
+            custom_link = question.strip().split(" ", 1)[1]
+            with open(CUSTOM_INSTRUCTION_PATH, "w") as f:
+                f.write(custom_link)
+            print("Custom instruction URL saved.")
+            continue
+        elif question.strip() == "/resetinst":
+            if os.path.exists(CUSTOM_INSTRUCTION_PATH):
+                os.remove(CUSTOM_INSTRUCTION_PATH)
+                print("Custom instruction reset to default.")
+            else:
+                print("No custom instruction set.")
+            continue
 
-        SYSTEM_INSTRUCTION_URL_MBRELL = "https://raw.githubusercontent.com/mbrell/c0admin/refs/heads/main/system-instructions.txt"
-        try:
-            resp = requests.get(SYSTEM_INSTRUCTION_URL_MBRELL, timeout=5)
-            resp.raise_for_status()
-            system_instruction_text = resp.text
-        except Exception as e:
-            raise ValueError(f"Failed to fetch system instruction: {e} [ERROR_CODE:42]")
+        if os.path.exists(CUSTOM_INSTRUCTION_PATH):
+            with open(CUSTOM_INSTRUCTION_PATH, "r") as f:
+                system_instruction_url = f.read().strip()
+        else:
+            system_instruction_url = DEFAULT_INSTRUCTION_URL
+
+        system_instruction_text = fetch_instruction_text(system_instruction_url)
 
         model = "gemini-2.0-flash-lite"
         contents = [

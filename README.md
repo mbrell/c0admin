@@ -41,6 +41,14 @@ python3 main.py
 - `/exit` — Exit the app safely.
 - `/help` — Redirects to repository.
 - `/history` — Displays the command history (history.txt).
+- `/setinst <url>` — Set a custom system instruction from a given URL.
+- `/resetinst` — Reset system instruction to the default one.
+
+## Custom System Instructions
+
+From the [system-instructions](https://github.com/mbrell/c0admin/tree/main/system-instructions) folder in the repo you can see all the community-created system instructions.
+
+We welcome your contributions on this issue.
 
 ## Contributing
 
