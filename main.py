@@ -85,91 +85,104 @@ def generate():
     client = genai.Client(
         api_key=api_key,
     )
-
-    while True:
-        question = input("> ")
-        if question.strip() == "/del":
-            delete_api_key()
-            return
-        elif question.strip() == "/":
-            print("Type your question or command.")
-            continue
-        elif question.strip() == "/exit":
-            print("Exiting...")
-            return
-        elif question.strip() == "/history":
-            if not os.path.exists("history.txt"):
-                print("History not found.")
+    try:
+        while True:
+            question = input("> ")
+            if question.strip() == "/del":
+                delete_api_key()
+                return
+            elif question.strip() == "/":
+                print("Type your question or command.")
                 continue
-            os.system("cat history.txt")
-            continue
-        elif question.strip() == "/help":
-            webbrowser.open("https://github.com/mbrell/c0admin")
-            print("Opening help documentation..")  
-            continue
-        elif question.strip().startswith("/setinst "):
-            custom_link = question.strip().split(" ", 1)[1]
-            with open(CUSTOM_INSTRUCTION_PATH, "w") as f:
-                f.write(custom_link)
-            print("Custom instruction URL saved.")
-            continue
-        elif question.strip() == "/resetinst":
+            elif question.strip() == "/exit":
+                print("Exiting...")
+                return
+            elif question.strip() == "/history":
+                if not os.path.exists("history.txt"):
+                    print("History not found.")
+                    continue
+                os.system("cat history.txt")
+                continue
+            elif question.strip() == "/help":
+                webbrowser.open("https://github.com/mbrell/c0admin")
+                print("Opening help documentation..")  
+                continue
+            elif question.strip() == "--help":
+                print("""/del — Delete the GEMINI API KEY.
+/exit — Exit the app safely.
+/help — Redirects to repository.
+/history — Displays the command history (history.txt).
+/setinst <url> — Set a custom system instruction from a given URL.
+/resetinst — Reset system instruction to the default one.""")
+                continue
+            elif question.strip().startswith("/setinst "):
+                custom_link = question.strip().split(" ", 1)[1]
+                with open(CUSTOM_INSTRUCTION_PATH, "w") as f:
+                    f.write(custom_link)
+                print("Custom instruction URL saved.")
+                continue
+            elif question.strip() == "/resetinst":
+                if os.path.exists(CUSTOM_INSTRUCTION_PATH):
+                    os.remove(CUSTOM_INSTRUCTION_PATH)
+                    print("Custom instruction reset to default.")
+                else:
+                    print("No custom instruction set.")
+                continue
+
             if os.path.exists(CUSTOM_INSTRUCTION_PATH):
-                os.remove(CUSTOM_INSTRUCTION_PATH)
-                print("Custom instruction reset to default.")
+                with open(CUSTOM_INSTRUCTION_PATH, "r") as f:
+                    system_instruction_url = f.read().strip()
             else:
-                print("No custom instruction set.")
-            continue
+                system_instruction_url = DEFAULT_INSTRUCTION_URL
 
-        if os.path.exists(CUSTOM_INSTRUCTION_PATH):
-            with open(CUSTOM_INSTRUCTION_PATH, "r") as f:
-                system_instruction_url = f.read().strip()
-        else:
-            system_instruction_url = DEFAULT_INSTRUCTION_URL
+            system_instruction_text = fetch_instruction_text(system_instruction_url)
 
-        system_instruction_text = fetch_instruction_text(system_instruction_url)
-
-        model = "gemini-2.0-flash-lite"
-        contents = [
-            types.Content(
-                role="user",
-                parts=[
-                    types.Part.from_text(text=question),
+            model = "gemini-2.0-flash-lite"
+            contents = [
+                types.Content(
+                    role="user",
+                    parts=[
+                        types.Part.from_text(text=question),
+                    ],
+                ),
+            ]
+            generate_content_config = types.GenerateContentConfig(
+                response_mime_type="text/plain",
+                system_instruction=[
+                    types.Part.from_text(text=system_instruction_text),
                 ],
-            ),
-        ]
-        generate_content_config = types.GenerateContentConfig(
-            response_mime_type="text/plain",
-            system_instruction=[
-                types.Part.from_text(text=system_instruction_text),
-            ],
-        )
+            )
 
-        stop_event = threading.Event()
-        t = threading.Thread(target=spinner, args=(stop_event,))
-        t.start()
+            stop_event = threading.Event()
+            t = threading.Thread(target=spinner, args=(stop_event,))
+            t.start()
 
-        answer_text = ""
-        try:
-            for chunk in client.models.generate_content_stream(
-                model=model,
-                contents=contents,
-                config=generate_content_config,
-            ):
+            answer_text = ""
+            try:
+                for chunk in client.models.generate_content_stream(
+                    model=model,
+                    contents=contents,
+                    config=generate_content_config,
+                ):
+                    stop_event.set()
+                    t.join()
+                    print(chunk.text, end="")
+                    answer_text += chunk.text
+                    try:
+                        pyperclip.copy(answer_text)
+                    except pyperclip.PyperclipException:
+                        pass
+            except Exception as e:
+                if "API key not valid" in str(e):
+                    print("\nAPI key not valid. Please check your GEMINI_API_KEY or type /del to reset.")
+                else:
+                    print("An error occurred:", str(e))
+            finally:
+                log_history(answer_text)
                 stop_event.set()
                 t.join()
-                print(chunk.text, end="")
-                answer_text += chunk.text
-                pyperclip.copy(answer_text)
-        except Exception as e:
-            if "API key not valid" in str(e):
-                print("\nAPI key not valid. Please check your GEMINI_API_KEY or type /del to reset.")
-            else:
-                print("An error occurred:", str(e))
-        finally:
-            log_history(answer_text)
-            stop_event.set()
-            t.join()
+    except KeyboardInterrupt:
+        print("\nExiting..")
 
 if __name__ == "__main__":
     generate()
