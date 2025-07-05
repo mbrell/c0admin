@@ -69,7 +69,7 @@ def fetch_instruction_text(url):
         resp.raise_for_status()
         return resp.text
     except Exception as e:
-        print(f"sWarning: Failed to fetch system instruction from {url}. Using default..")
+        print(f"Warning: Failed to fetch system instruction from {url}. Using default..")
         try:
             resp = requests.get(DEFAULT_INSTRUCTION_URL, timeout=5)
             resp.raise_for_status()
