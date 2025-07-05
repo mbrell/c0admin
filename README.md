@@ -49,6 +49,13 @@ Start the application:
 python3 main.py
 ```
 
+or
+
+Start the minimal version of the application:
+```bash
+python3 main-minimal.py
+```
+
 ## Commands
 
 - `--help`
