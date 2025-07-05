@@ -1,3 +1,14 @@
+<details>
+  <summary>Soon.. 👀</summary>
+  
+  <img src=desktop.png>
+  
+  Of course after INSTALL.sh....
+
+</details>
+
+<p></p>
+
 # c0admin
 
 Suggests GNU/Linux terminal commands from natural language using AI.
@@ -6,6 +17,9 @@ Suggests GNU/Linux terminal commands from natural language using AI.
 
 > [!IMPORTANT]
 > INSTALL.sh will work soon...
+
+> [!WARNING]
+> For the automatic copy to clipboard feature to work, you must have the ‘xsel’ and ‘xclip’ packages installed on your system.
 
 [How to get personal Google Gemini API key?](https://github.com/mbrell/c0admin/blob/main/how-to-get-gemini-api-key.md)
 
@@ -36,6 +50,8 @@ python3 main.py
 ```
 
 ## Commands
+
+- `--help`
 
 - `/del` — Delete the GEMINI API KEY.
 - `/exit` — Exit the app safely.
