@@ -1,22 +1,8 @@
-<details>
-  <summary>Soon.. 👀</summary>
-  
-  <img src=desktop.png>
-  
-  Of course after INSTALL.sh....
-
-</details>
-
-<p></p>
-
 # c0admin
 
 Suggests GNU/Linux terminal commands from natural language using AI.
 
 ![c0admin Banner](c0admin-banner.png)
-
-> [!IMPORTANT]
-> INSTALL.sh will work soon...
 
 > [!WARNING]
 > For the automatic copy to clipboard feature to work, you must have the ‘xsel’ and ‘xclip’ packages installed on your system.
