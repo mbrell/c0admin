@@ -1,4 +1,4 @@
-# c0admin
+# c0admin 🐧
 
 Suggests GNU/Linux terminal commands from natural language using AI.
 
@@ -11,35 +11,22 @@ Suggests GNU/Linux terminal commands from natural language using AI.
 
 ## Installation
 
-1. Clone the repository:
+To install `c0admin` system-wide on GNU/Linux:
+
 ```bash
-git clone https://github.com/mbrell/c0admin.git
-cd c0admin
+curl -s https://raw.githubusercontent.com/mbrell/c0admin/main/install.sh | bash
 ```
+This will:
 
-2. Create a virtual environment (recommended):
+- Download and install c0admin to ~/.c0admin/
+- Set up a Python virtual environment
+- Install dependencies
+- Make c0admin available as a global terminal command
+
+After installation, you can start the app anytime by simply typing:
+
 ```bash
-python -m venv venv
-source venv/bin/activate 
-```
-
-3. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-## Usage
-
-Start the application:
-```bash
-python3 main.py
-```
-
-or
-
-Start the minimal version of the application:
-```bash
-python3 main-minimal.py
+c0admin
 ```
 
 ## Commands
