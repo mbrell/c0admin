@@ -42,7 +42,7 @@ c0admin
 
 ## Custom System Instructions
 
-From the [system-instructions](https://github.com/mbrell/c0admin/tree/main/system-instructions) folder in the repo you can see all the community-created system instructions.
+From the [system-instructions](https://github.com/mbrell/c0admin-system-instructions) repo you can see all the community-created system instructions.
 
 We welcome your contributions on this issue.
 
