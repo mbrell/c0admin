@@ -56,4 +56,4 @@ We welcome your contributions on this issue.
 
 ---
 
-Built with ❤️ using Python
+c0admin is an Mbrell project. 💧
