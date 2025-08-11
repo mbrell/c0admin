@@ -31,7 +31,7 @@ c0admin
 
 ## Commands
 
-- `--help` — Display help information.
+- `/help` — Display help information.
 - `/del` — Delete the GEMINI API KEY.
 - `/exit` — Exit the app safely.
 - `/history` — Displays the command history (history.txt).
