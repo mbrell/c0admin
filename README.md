@@ -31,11 +31,9 @@ c0admin
 
 ## Commands
 
-- `--help`
-
+- `--help` — Display help information.
 - `/del` — Delete the GEMINI API KEY.
 - `/exit` — Exit the app safely.
-- `/help` — Redirects to repository.
 - `/history` — Displays the command history (history.txt).
 - `/setinst <url>` — Set a custom system instruction from a given URL.
 - `/resetinst` — Reset system instruction to the default one.
