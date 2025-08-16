@@ -17,29 +17,52 @@ init()
 CUSTOM_INSTRUCTION_PATH = "custom_instruction.txt"
 DEFAULT_INSTRUCTION_URL = "https://raw.githubusercontent.com/mbrell/c0admin-system-instructions/refs/heads/main/instructions/default.txt"
 
+def validate_api_key_format(api_key):
+    return api_key and len(api_key) > 10
 def ensure_api_key():
     api_key = os.environ.get("GEMINI_API_KEY")
     env_path = ".env"
     if not api_key:
         if os.path.exists(env_path):
-            with open(env_path) as f:
-                for line in f:
-                    if line.startswith("GEMINI_API_KEY="):
-                        api_key = line.strip().split("=", 1)[1]
-                        break
+            try:
+                with open(env_path) as f:
+                    for line in f:
+                        if line.startswith("GEMINI_API_KEY="):
+                            api_key = line.strip().split("=", 1)[1]
+                            break
+            except Exception as e:
+                print(f"Warning: Could not read {env_path}.")
         if not api_key:
-            api_key = input("Enter your GEMINI_API_KEY: ").strip()
-            with open(env_path, "a") as f:
-                f.write(f"GEMINI_API_KEY={api_key}\n")
+            while True:
+                api_key = input("Enter your GEMINI_API_KEY: ").strip()
+                if validate_api_key_format(api_key):
+                    break
+                else:
+                    print("Invalid API key format. Please try again.")
+            try:
+                with open(env_path, "a") as f:
+                    f.write(f"GEMINI_API_KEY={api_key}\n")
+                print("API key saved successfully.")
+            except Exception as e:
+                print(f"Warning: Could not save API key to {env_path}.")
+                print("You may need to re-enter the API key next time.")
+    elif not validate_api_key_format(api_key):
+        print("Warning: Invalid API key format found in environment.")
     os.environ["GEMINI_API_KEY"] = api_key
     return api_key
 
 def delete_api_key():
     env_path = ".env"
-    if os.path.exists(env_path):
-        os.remove(env_path)
+    try:
+        if os.path.exists(env_path):
+            os.remove(env_path)
+            print("API key file deleted.")
+        else:
+            print("No API key file found.")
+    except Exception as e:
+        print(f"Error deleting API key file.")
     os.environ.pop("GEMINI_API_KEY", None)
-    print("API key deleted.")
+    print("API key deleted from environment.")
 
 def spinner(stop_event):
     for c in itertools.cycle(['|', '/', '-', '\\']):
@@ -65,17 +88,20 @@ def log_history(answer):
 
 def fetch_instruction_text(url):
     try:
-        resp = requests.get(url, timeout=5)
+        resp = requests.get(url, timeout=10)
         resp.raise_for_status()
         return resp.text
     except Exception as e:
-        print(f"Warning: Failed to fetch system instruction from {url}. Using default..")
+        print(f"Warning: Failed to fetch system instruction from {url}. Error: {e}")
+        print("Attempting to fetch default instruction...")
         try:
-            resp = requests.get(DEFAULT_INSTRUCTION_URL, timeout=5)
+            resp = requests.get(DEFAULT_INSTRUCTION_URL, timeout=10)
             resp.raise_for_status()
+            print("Default system instruction fetched successfully.")
             return resp.text
         except Exception as fallback_error:
-            raise ValueError(f"Failed to fetch default instruction: {fallback_error} [ERROR_CODE:43]")
+            print(f"Failed to fetch default instruction: {fallback_error}")
+            raise ValueError(f"Failed to fetch default instruction: {fallback_error}.")
 
 def generate():
     print_ascii()
